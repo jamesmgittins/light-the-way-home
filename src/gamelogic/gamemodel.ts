@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { PlayerLightType } from './pixi/playerlights';
 import { loadSaveGame } from './saveloadfunctions';
 
 /**
@@ -31,6 +32,27 @@ export enum GameState {
 export class GameModel {
     public saveData : SaveData;
     public state = GameState.startgame;
+
+    public playerLights = {
+        spotlight : {
+            type : PlayerLightType.spotlight,
+            count : 1,
+            radius : 32,
+            brightness : 24
+        },
+        beamlight : {
+            type : PlayerLightType.beamlight,
+            count : 0,
+            range : 64,
+            brightness : 95
+        },
+        orboflight : {
+            type : PlayerLightType.orboflight,
+            count : 0,
+            radius : 24,
+            brightness : 64
+        }
+    }
 
     public getEscapePercent() : number {
         return Math.round((this.humansEscaped / this.humansToSpawn) * 100);

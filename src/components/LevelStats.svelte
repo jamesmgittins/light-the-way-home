@@ -18,13 +18,13 @@ import { formatWhole } from "../gamelogic/utils";
 <style>
     div.stats {
         position: absolute;
-        top:1rem;
-        left:1rem;
+        top:0.5rem;
+        left:0.5rem;
     }
     p {
         margin:0.5rem;
     }
     p > span {
-        margin-right: 1rem;
+        margin-right: 0.5rem;
     }
 </style>
