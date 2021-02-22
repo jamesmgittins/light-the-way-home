@@ -14,6 +14,7 @@
 	import Playing from "./routes/Playing.svelte";
 	import LevelStats from "./components/LevelStats.svelte";
 	import Options from "./components/Options.svelte";
+	import EndLevel from "./routes/EndLevel.svelte";
 
 	onMount(() => {
 		startApplication();
@@ -28,7 +29,7 @@
 			componentToShow = Playing;
 			break;
 		case GameState.endoflevel:
-			componentToShow = Home;
+			componentToShow = EndLevel;
 			break;
 	}
 </script>

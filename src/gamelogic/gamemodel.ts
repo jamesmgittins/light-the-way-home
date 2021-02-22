@@ -32,6 +32,9 @@ export class GameModel {
     public saveData : SaveData;
     public state = GameState.startgame;
 
+    public getEscapePercent() : number {
+        return Math.round((this.humansEscaped / this.humansToSpawn) * 100);
+    }
     public humansToSpawn = 100;
     public humansSpawned = 0;
     public humansEscaped = 0;
@@ -47,7 +50,7 @@ export class GameModel {
         this.humansEscaped = 0;
         this.humansSpawned = 0;
         this.humansEaten = 0;
-        this.humanValue = this.saveData.level;
+        this.humanValue = this.saveData.level * 10;
     }
 
     public constructor() {

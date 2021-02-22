@@ -31,12 +31,16 @@ export function setHumanTextures() : void {
     }
 }
 
+const drunkTimer = 5;
+
 export class Human extends Character {
     captured = false;
     escaped = false;
     light : Light;
+    drunkTimer = Math.random() * drunkTimer;
     walkingTextures : PIXI.Texture[];
     deadTextures : PIXI.Texture[];
+    goal : PIXI.Sprite;
     constructor(textureId : number) {
         super(textures[textureId].animated);
         this.walkingTextures = textures[textureId].animated;
@@ -44,8 +48,8 @@ export class Human extends Character {
         this.animationSpeed = 0.15;
         this.anchor.set(35 / 80, 1);
     }
-    updateHumanSpeed(timeDiff : number, goal : PIXI.Sprite) : void {
-        const targetVector = normalizeVector(goal.x - this.x, goal.y - this.y);
+    updateHumanSpeed(timeDiff : number) : void {
+        const targetVector = normalizeVector(this.goal.x - this.x, this.goal.y - this.y);
         const factor = gameModelInstance.humanSpeed * 5 * timeDiff;
 
         this.speed.x += targetVector.x * factor;
@@ -63,16 +67,25 @@ export class Human extends Character {
         this.y += this.speed.y * timeDiff;
         this.zIndex = this.y;
     }
-    updateHuman(timeDiff : number, goal : PIXI.Sprite) : void {
+    updateHuman(timeDiff : number) : void {
         if (this.visible && !this.captured) {
-            this.updateHumanSpeed(timeDiff, goal);
+            this.updateHumanSpeed(timeDiff);
+
+            this.drunkTimer -= timeDiff;
+            if (this.drunkTimer < 0) {
+                this.drunkTimer = Math.random() * drunkTimer;
+                this.speed = {
+                    x:(Math.random() - 0.5) * gameModelInstance.humanSpeed * 2,
+                    y:(Math.random() - 0.5) * gameModelInstance.humanSpeed * 2
+                }
+            }
 
             if (Math.abs(this.speed.x) > 1)
                 this.scale.x = this.speed.x > 0 ? 1 : -1;
     
             this.light.position.set(this.x, this.y - 5);
     
-            if (distanceBetweenPoints(goal.x, goal.y, this.x, this.y) < 20) {
+            if (distanceBetweenPoints(this.goal.x, this.goal.y, this.x, this.y) < 20) {
                 this.discard();
                 this.light.discard();
                 gameModelInstance.addMoney(gameModelInstance.humanValue);
@@ -101,7 +114,7 @@ export class Human extends Character {
     }
 }
 
-function getHuman() : Human {
+function getHuman(goalBuildings : PIXI.Sprite[]) : Human {
     if (discardedHumans.length > 0) {
         const human = discardedHumans.shift();
         human.captured = false;
@@ -110,10 +123,12 @@ function getHuman() : Human {
         human.textures = human.walkingTextures;
         human.light = getLight(gameModelInstance.humanLight.radius, gameModelInstance.humanLight.brightness);
         human.play();
+        human.goal = goalBuildings[Math.floor(Math.random() * goalBuildings.length)];
         return human;
     }
     const human = new Human(Math.floor(Math.random() * 3));
     human.light = getLight(gameModelInstance.humanLight.radius, gameModelInstance.humanLight.brightness);
+    human.goal = goalBuildings[Math.floor(Math.random() * goalBuildings.length)];
     humanArray.push(human);
     characterContainer.addChild(human);
     human.play();
@@ -125,10 +140,10 @@ let humanTimer = 0;
 
 export function updateHumans(timeDiff : number) : void {
     const startBuilding = getStartBuilding();
-    const goalBuilding = getGoal();
+    const goalBuildings = getGoal();
 
     for (let i = 0; i < humanArray.length; i++) {
-        humanArray[i].updateHuman(timeDiff, goalBuilding);
+        humanArray[i].updateHuman(timeDiff);
     }
 
     humanTimer += timeDiff;
@@ -136,8 +151,8 @@ export function updateHumans(timeDiff : number) : void {
         humanTimer = 0;
         gameModelInstance.humansSpawned++;
         updateGameModel();
-        const human = getHuman();
-        human.position.set(startBuilding.x, startBuilding.y);
+        const human = getHuman(goalBuildings);
+        human.position.set(startBuilding.x + 12, startBuilding.y);
     }
 }
 
@@ -147,5 +162,5 @@ export function setupHumansLevel() : void {
 
 
 export function getAliveHumans() : Human[] {
-    return humanArray.filter(h => !h.captured && !h.escaped);
+    return humanArray.filter(h => !h.captured && !h.escaped && h.visible);
 }

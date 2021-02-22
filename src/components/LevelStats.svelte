@@ -9,9 +9,9 @@ import { formatWhole } from "../gamelogic/utils";
     <p>
         <span>Level: {$gameModel.saveData.level}</span>
         <span>Gold: {formatWhole($gameModel.saveData.money)}</span>
-        <span>Humans Spawned: {$gameModel.humansSpawned}</span>
-        <span>Humans Eaten: {$gameModel.humansEaten}</span>
-        <span>Humans Escaped: {$gameModel.humansEscaped} / {$gameModel.humansToSpawn} ({Math.round(100 * $gameModel.humansEscaped / $gameModel.humansToSpawn) * 100}%)</span>
+        <span>Villagers left pub: {$gameModel.humansSpawned}</span>
+        <span>Villagers eaten by monsters: {$gameModel.humansEaten}</span>
+        <span>Villagers home safe: {$gameModel.humansEscaped} / {$gameModel.humansToSpawn} ({$gameModel.getEscapePercent()}%)</span>
     </p>
 </div>
 

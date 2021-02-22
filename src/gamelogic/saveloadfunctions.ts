@@ -21,8 +21,8 @@ export function loadSaveGame(): SaveData {
             // get data from localstorage, decompress it using lz-string, then parse it back into a javascript object
             const saveData = JSON.parse(decompress(localStorage.getItem(storageName)));
 
-            console.log('SaveData loaded:');
-            console.log(saveData);
+            // console.log('SaveData loaded:');
+            // console.log(saveData);
 
             // migrate the data so we know it is good to use
             dataMigrate(saveData);

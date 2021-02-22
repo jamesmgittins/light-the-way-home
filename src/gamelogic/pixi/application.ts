@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { gameModel, GameModel, GameState } from '../gamemodel';
+import { gameModel, GameModel, GameState, updateGameModel } from '../gamemodel';
+import { saveSaveGame } from '../saveloadfunctions';
 import { setupBuildings, updateBuildingLights } from './buildings';
 import { backgroundContainer, maskContainer, maskRenderTexture } from './containers';
 import { setupEyes, updateEyes } from './eyes';
@@ -39,6 +40,8 @@ function renderMask() : void {
     maskContainer.visible = false;
 }
 
+let endLevelTimer = 2;
+
 function update(timeDiff: number) {
     scrollGameContainer(timeDiff);
 
@@ -50,10 +53,20 @@ function update(timeDiff: number) {
         updateHumans(timeDiff);
         updateMonsters(timeDiff);
         updateLights(timeDiff);
+
+        if (gameModelInstance.humansEaten + gameModelInstance.humansEscaped >= gameModelInstance.humansToSpawn) {
+            endLevelTimer -= timeDiff;
+            if (endLevelTimer < 0) {
+                gameModelInstance.state = GameState.endoflevel;
+                saveSaveGame(gameModelInstance.saveData);
+                updateGameModel();
+            }
+        }
     }
 }
 
 export function setupLevel() : void {
+    endLevelTimer = 2;
     gameModelInstance.setupLevel();
     setupHumansLevel();
     setupMonstersLevel();

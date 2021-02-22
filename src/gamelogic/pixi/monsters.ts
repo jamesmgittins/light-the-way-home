@@ -55,6 +55,7 @@ export class Monster extends Character {
     target: Human;
     escapeVector : {x:number, y:number};
     health : number;
+    startDelay = Math.random() * 10;
     holdingTarget = false;
     currentDirection = Directions.down;
 
@@ -72,8 +73,13 @@ export class Monster extends Character {
     }
 
     updateMonster(timeDiff: number, maxHealth : number, aliveHumans : Human[]): void {
+        if (this.startDelay > 0) {
+            this.startDelay -= timeDiff;
+            return;
+        }
         if (!this.holdingTarget && (!this.target || this.target.captured || this.target.escaped)) {
             this.target = this.findClosestHuman(aliveHumans);
+            if (this.target && (this.target.captured || this.target.escaped)) this.target = undefined;
             if (!this.target) return;
         }
         this.updateMonsterSpeed(timeDiff);
@@ -81,14 +87,20 @@ export class Monster extends Character {
             this.target.position.set(this.position.x, this.position.y - 5);
             this.target.light.position.set(this.position.x, this.position.y - 5);
             if (distanceBetweenPoints(this.x, this.y, this.escapeVector.x, this.escapeVector.y) < 20) {
+                if (!this.target.escaped) {
+                    gameModelInstance.humansEaten++;
+                    updateGameModel();
+                }
                 this.target.discard();
                 this.target = undefined;
                 this.holdingTarget = false;
-                gameModelInstance.humansEaten++;
-                updateGameModel();
             }
         } else {
             if (distanceBetweenPoints(this.x, this.y, this.target.x, this.target.y) < 10) {
+                if (this.target.escaped || this.target.captured) {
+                    this.target = undefined;
+                    return;
+                }
                 this.target.capture();
                 this.target.light.brightness = gameModelInstance.humanLight.brightness / 2;
                 this.holdingTarget = true;
@@ -182,11 +194,13 @@ export function setupMonstersLevel() : void {
     monsterArray.forEach(m => {
         m.holdingTarget = false;
         m.position.copyFrom(getRandomPosition());
+        m.startDelay = Math.random() * 10;
     });
 }
 
 export function updateMonsters(timeDiff : number) : void {
     const aliveHumans = getAliveHumans();
+    console.log(`aliveHumans.length = ${aliveHumans.length}`);
     const monsterMaxHealth = 80 * Math.pow(1.2, gameModelInstance.saveData.level);
     const numMonsters = maxMonsters;
 
