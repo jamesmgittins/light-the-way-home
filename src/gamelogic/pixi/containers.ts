@@ -5,6 +5,7 @@ import { gameFieldSize, gameContainer } from './mapfunctions';
 export const innerContainer = new PIXI.Container();
 export const backgroundContainer = new PIXI.Container();
 export const characterContainer = new PIXI.Container();
+characterContainer.sortableChildren = true;
 export const maskContainer = new PIXI.Container();
 export const unmaskedContainer = new PIXI.Container();
 

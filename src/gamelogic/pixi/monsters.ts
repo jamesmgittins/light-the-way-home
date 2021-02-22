@@ -86,6 +86,11 @@ export class Monster extends Character {
         if (this.holdingTarget) {
             this.target.position.set(this.position.x, this.position.y - 5);
             this.target.light.position.set(this.position.x, this.position.y - 5);
+            if (this.currentDirection == Directions.up) {
+                this.target.zIndex = this.zIndex - 1;
+            } else {
+                this.target.zIndex = this.zIndex + 1;
+            }
             if (distanceBetweenPoints(this.x, this.y, this.escapeVector.x, this.escapeVector.y) < 20) {
                 if (!this.target.escaped) {
                     gameModelInstance.humansEaten++;

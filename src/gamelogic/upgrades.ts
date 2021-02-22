@@ -1,4 +1,5 @@
 import { gameModel, GameModel, updateGameModel } from "./gamemodel";
+import { PlayerLightType } from "./pixi/playerlights";
 import { saveSaveGame } from "./saveloadfunctions";
 
 /**
@@ -15,13 +16,15 @@ export class Upgrade {
     public id: number; // unique id
     public name: string;
     public description: string;
-    public basePrice: number;
+    public lightType : PlayerLightType;
+    public basePrice: number; 
     public multiplier: number;
     
-    constructor(id: number, name: string, description: string, basePrice: number, multiplier: number) {
+    constructor(id: number, lightType : PlayerLightType, name: string, description: string, basePrice: number, multiplier: number) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.lightType = lightType;
         this.basePrice = basePrice;
         this.multiplier = multiplier;
     }
@@ -61,7 +64,7 @@ export class Upgrade {
 }
 
 export const upgrades = [
-    new Upgrade(1, 'Additional Light', 'Increase the amount of lights you can place by 1', 50, 1.5)
+    new Upgrade(1, PlayerLightType.spotlight, 'Additional Light', 'Increase the amount of lights you can place by 1', 50, 1.5)
 ];
 
 /**
