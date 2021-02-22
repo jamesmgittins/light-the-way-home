@@ -1,5 +1,8 @@
-import { GameModel, gameModel, SaveData } from "./gamemodel";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { GameModel } from "./gamemodel";
 import { compress, decompress } from 'lz-string';
+import { gameModel } from "./stores";
+import { SaveData } from "./savedata";
 
 /**
  * This is the key the save data will be stored under inside localstorage
@@ -22,7 +25,7 @@ export function loadSaveGame(): SaveData {
             const saveData = JSON.parse(decompress(localStorage.getItem(storageName)));
 
             // console.log('SaveData loaded:');
-            // console.log(saveData);
+            console.log(saveData);
 
             // migrate the data so we know it is good to use
             dataMigrate(saveData);
@@ -93,5 +96,5 @@ export function resetSaveGame() : void {
     localStorage.removeItem(storageName);
 
     // update the stored gameModel with a new one
-    gameModel.update(g => g = new GameModel());
+    gameModel.update(g => g = new GameModel(new SaveData()));
 }

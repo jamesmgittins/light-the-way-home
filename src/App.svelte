@@ -10,11 +10,13 @@
 	import Notifications from './components/Notifications.svelte';
 	import { onMount } from "svelte";
 	import { startApplication } from "./gamelogic/pixi/application";
-	import { gameModel, GameState } from "./gamelogic/gamemodel";
+	import { GameState } from "./gamelogic/gamemodel";
 	import Playing from "./routes/Playing.svelte";
 	import LevelStats from "./components/LevelStats.svelte";
 	import Options from "./components/Options.svelte";
 	import EndLevel from "./routes/EndLevel.svelte";
+	import { gameModel } from "./gamelogic/stores";
+import MonsterHealthBars from "./components/MonsterHealthBars.svelte";
 
 	onMount(() => {
 		startApplication();
@@ -44,6 +46,7 @@
 
 {#if $gameModel.state == GameState.playing}
 	<LevelStats/>
+	<MonsterHealthBars/>
 {/if}
 
 <Options/>
@@ -71,9 +74,11 @@
 		background-color: #000;
 	}
 	div.item {
-		/* flex-grow: 1; */
+		flex-grow: 1;
 		flex-basis: auto;
+		background-color: #111;
 		width: 100%;
+		z-index: 20;
 		/* overflow: auto; */
 	}
 </style>

@@ -1,8 +1,6 @@
 <script lang="ts">
-import { gameModel } from "../gamelogic/gamemodel";
+import { gameModel } from "../gamelogic/stores";
 import { formatWhole } from "../gamelogic/utils";
-
-
 </script>
 
 <div class="stats">
@@ -20,6 +18,7 @@ import { formatWhole } from "../gamelogic/utils";
         position: absolute;
         top:0.5rem;
         left:0.5rem;
+        z-index: 30;
     }
     p {
         margin:0.5rem;

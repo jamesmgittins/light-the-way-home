@@ -1,7 +1,9 @@
 <script lang="ts">
-    import { gameModel, GameState, updateGameModel } from "../gamelogic/gamemodel";
+    import { GameState } from "../gamelogic/gamemodel";
     import { setupLevel } from "../gamelogic/pixi/application";
-    $: levelComplete = $gameModel.getEscapePercent() >= 50;
+    import { saveSaveGame } from "../gamelogic/saveloadfunctions";
+    import { gameModel, updateGameModel } from "../gamelogic/stores";
+    $: levelComplete = $gameModel.getEscapePercent() >= 75;
 
     function startGame() {
         setupLevel();
@@ -11,6 +13,8 @@
 
     function changeLevel(change : number) {
         $gameModel.saveData.level += change;
+        updateGameModel();
+        saveSaveGame($gameModel.saveData);
         startGame();
     }
 </script>
@@ -24,7 +28,7 @@
     {:else}
         <h1>Level Failed</h1>
         <p>You only helped {$gameModel.getEscapePercent()}% of the villagers get home safely</p>
-        <p>You must help 50% or more to complete the level</p>
+        <p>You must help 75% or more to complete the level</p>
         {#if $gameModel.saveData.level > 1}
             <button on:click={e => changeLevel(-1)}>Go back to level {$gameModel.saveData.level - 1}</button>
         {/if}

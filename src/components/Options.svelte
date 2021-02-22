@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { gameModel } from "../gamelogic/gamemodel";
     import { sendMessage } from "../gamelogic/notifications";
     import { resetSaveGame, saveSaveGame } from "../gamelogic/saveloadfunctions";
+    import { gameModel } from "../gamelogic/stores";
 
     let showOptions = false;
 

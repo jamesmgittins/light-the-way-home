@@ -1,7 +1,9 @@
 import * as PIXI from 'pixi.js';
-import { gameModel, GameModel, GameState } from '../gamemodel';
+import { GameModel, GameState } from '../gamemodel';
+import { gameModel } from '../stores';
 import { distanceBetweenPoints } from "../utils";
 import { KeysPressed } from './keyboard';
+import { playerClick, playerMouseMove } from './playerlights';
 
 /**
  * Reference to the GameModel.
@@ -56,9 +58,11 @@ export function onDragMove(event): void {
         this.x = newPosition.x - this.dragOffset.x;
         this.y = newPosition.y - this.dragOffset.y;
         preventGameContainerLeavingBounds(this);
-        if (distanceBetweenPoints(this.dragStartX, this.dragStartY, this.x, this.y) > 5) {
+        if (distanceBetweenPoints(this.dragStartX, this.dragStartY, this.x, this.y) > 10) {
             this.hasMoved = true;
         }
+    } else {
+        playerMouseMove(event.data.getLocalPosition(this).x, event.data.getLocalPosition(this).y);
     }
 }
 
@@ -148,9 +152,9 @@ export function centerGameContainer(resetZoom = false): void {
     gameContainer.y = (canvasSize.y - gameFieldSize.y * gameContainer.scale.y) / 2;
 }
 
-function onClickTap(event: MouseEvent) {
+function onClickTap(event) {
     if (!this.hasMoved && gameModelInstance.state == GameState.playing) {
-        // do stuff on click
+        playerClick(event.data.getLocalPosition(this).x, event.data.getLocalPosition(this).y);
     }
     this.hasMoved = false;
 }

@@ -1,25 +1,6 @@
-import { writable } from 'svelte/store';
-import { PlayerLightType } from './pixi/playerlights';
-import { loadSaveGame } from './saveloadfunctions';
-
-/**
- * This class holds any data that needs to be saved when the player saves their game.
- * It should only be used for values that must be saved. Anything transient should go directly on the GameModel.
- */
-export class SaveData {
-
-    // Used to hold the current money the player has, initialized at 0
-    public money  = 0;
-
-    // Level reached
-    public level  = 1;
-
-    // Used to hold which upgrades have been bought, and the quantity
-    public upgradesBought : number[] = [];
-
-    // Used to hold when the game was last saved, needed to calculate offline progress
-    public lastSaved  = 0;
-}
+import { PlayerLightType } from './pixi/playerlightenum';
+import type { SaveData } from './savedata';
+// import { loadSaveGame } from './saveloadfunctions';
 
 export enum GameState {
     startgame, endoflevel, playing
@@ -34,6 +15,7 @@ export class GameModel {
     public state = GameState.startgame;
 
     public playerLights = {
+        currentLight : PlayerLightType.spotlight,
         spotlight : {
             type : PlayerLightType.spotlight,
             count : 1,
@@ -75,9 +57,10 @@ export class GameModel {
         this.humanValue = this.saveData.level * 10;
     }
 
-    public constructor() {
+    public constructor(saveData : SaveData) {
         // when we first create the game model we need to load any save data from localstorage
-        this.saveData = loadSaveGame();
+        // this.saveData = loadSaveGame();
+        this.saveData = saveData;
     }
 
     /**
@@ -102,18 +85,4 @@ export class GameModel {
         }
         return false;
     }
-}
-
-/**
- * A writable store of the gameModel that can be accessed from other parts of the application.
- */
-export const gameModel = writable(new GameModel());
-
-/**
- * A function that can be called anywhere to update the game model in the svelte store.
- * This will trigger the svelte components to re-evaluate and update their content.
- */
-export function updateGameModel() : void {
-    // eslint-disable-next-line no-self-assign
-    gameModel.update(m => m = m);
 }

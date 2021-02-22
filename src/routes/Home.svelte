@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { gameModel, GameState, updateGameModel } from "../gamelogic/gamemodel";
+    import { GameState } from "../gamelogic/gamemodel";
     import { setupLevel } from "../gamelogic/pixi/application";
+    import { gameModel, updateGameModel } from "../gamelogic/stores";
 
     function startGame() {
         setupLevel();

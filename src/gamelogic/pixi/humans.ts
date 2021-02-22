@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { gameModel, GameModel, updateGameModel } from '../gamemodel';
+import type { GameModel } from '../gamemodel';
+import { gameModel, updateGameModel } from '../stores';
 import { distanceBetweenPoints, normalizeVector } from '../utils';
 import { getGoal, getStartBuilding } from './buildings';
 import { Character } from './character';
@@ -104,6 +105,7 @@ export class Human extends Character {
     drop() : void {
         this.captured = false;
         this.textures = this.walkingTextures;
+        this.light.brightness = gameModelInstance.humanLight.brightness;
     }
     discard() : void {
         this.visible = false;

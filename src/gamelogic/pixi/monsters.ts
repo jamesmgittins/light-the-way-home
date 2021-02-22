@@ -1,10 +1,12 @@
 import * as PIXI from 'pixi.js';
-import { gameModel, GameModel, updateGameModel } from "../gamemodel";
+import type { GameModel } from "../gamemodel";
+import { gameModel, MonsterHealthBar, monsterHealthBars, updateGameModel, updateMonsterHealthBars } from '../stores';
 import { distanceBetweenPoints, normalizeVector } from "../utils";
 import { Character } from "./character";
 import { characterContainer } from './containers';
 import { getAliveHumans, Human } from "./humans";
 import { gameFieldSize } from "./mapfunctions";
+import { getPlayerLights, PlayerLight } from './playerlights';
 
 /**
  * Reference to the GameModel.
@@ -12,6 +14,9 @@ import { gameFieldSize } from "./mapfunctions";
  */
 let gameModelInstance: GameModel;
 gameModel.subscribe(m => gameModelInstance = m);
+
+let monsterHealthBarArray : MonsterHealthBar[];
+monsterHealthBars.subscribe(m => monsterHealthBarArray = m);
 
 enum Directions {
     up, down, left, right
@@ -28,7 +33,7 @@ const textures = {
 const monsterArray: Monster[] = [];
 
 const maxMonsters = 5;
-const monsterSpeed = 45;
+const monsterSpeed = 43;
 const monsterScaling = 1;
 
 export function setMonsterTextures(): void {
@@ -72,17 +77,17 @@ export class Monster extends Character {
         return closestHuman;
     }
 
-    updateMonster(timeDiff: number, maxHealth : number, aliveHumans : Human[]): void {
+    updateMonster(timeDiff: number, aliveHumans : Human[], maxHealth : number): void {
         if (this.startDelay > 0) {
             this.startDelay -= timeDiff;
             return;
         }
-        if (!this.holdingTarget && (!this.target || this.target.captured || this.target.escaped)) {
+        if (!this.holdingTarget && this.health > maxHealth / 2 && (!this.target || this.target.captured || this.target.escaped)) {
             this.target = this.findClosestHuman(aliveHumans);
             if (this.target && (this.target.captured || this.target.escaped)) this.target = undefined;
             if (!this.target) return;
         }
-        this.updateMonsterSpeed(timeDiff);
+        this.updateMonsterSpeed(timeDiff, maxHealth);
         if (this.holdingTarget) {
             this.target.position.set(this.position.x, this.position.y - 5);
             this.target.light.position.set(this.position.x, this.position.y - 5);
@@ -101,7 +106,7 @@ export class Monster extends Character {
                 this.holdingTarget = false;
             }
         } else {
-            if (distanceBetweenPoints(this.x, this.y, this.target.x, this.target.y) < 10) {
+            if (this.target && distanceBetweenPoints(this.x, this.y, this.target.x, this.target.y) < 10) {
                 if (this.target.escaped || this.target.captured) {
                     this.target = undefined;
                     return;
@@ -114,23 +119,56 @@ export class Monster extends Character {
         }
     }
 
-    updateMonsterSpeed(timeDiff: number): void {
+    updateMonsterHealth(timeDiff : number, playerLights : PlayerLight[], maxHealth : number) : void {
+        let hasBeenhit = false;
+        for (let i = 0; i < playerLights.length; i++) {
+            const lightValue = playerLights[i].hitEffect(this);
+            if (lightValue > 0) hasBeenhit = true;
+            this.health -= lightValue * timeDiff;
+            if (this.health < maxHealth / 2) {
+                if (this.holdingTarget) {
+                    this.dropTarget();
+                }
+                this.target = undefined;
+            }
+            if (this.health <= 0) {
+                this.health = 0;
+            }
+        }
+        if (!hasBeenhit) {
+            this.health += maxHealth / 5 * timeDiff;
+            if (this.health > maxHealth) {
+                this.health = maxHealth;
+            }
+        }
+    }
+
+    updateMonsterSpeed(timeDiff: number, maxHealth : number): void {
 
         let vector : {x:number, y:number};
 
-        if (this.holdingTarget) {
+        if (this.holdingTarget || this.health < maxHealth / 2) {
+            if (!this.escapeVector) this.escapeVector = getRandomPosition();
             vector = normalizeVector(this.escapeVector.x - this.x, this.escapeVector.y - this.y);
         } else {
             vector = normalizeVector(this.target.x - this.x, this.target.y - this.y);
         }
 
-        this.speed.x = vector.x * monsterSpeed;
-        this.speed.y = vector.y * monsterSpeed;
+        this.speed.x = vector.x * (monsterSpeed + gameModelInstance.saveData.level);
+        this.speed.y = vector.y * (monsterSpeed + gameModelInstance.saveData.level);
 
         this.position.x += this.speed.x * timeDiff;
         this.position.y += this.speed.y * timeDiff;
         this.zIndex = this.y;
         this.changeDirection();
+    }
+
+    dropTarget() : void {
+        if (this.holdingTarget) {
+            this.holdingTarget = false;
+            this.target.drop();
+            this.target = undefined;
+        }
     }
 
     getDirection() : Directions {
@@ -205,8 +243,8 @@ export function setupMonstersLevel() : void {
 
 export function updateMonsters(timeDiff : number) : void {
     const aliveHumans = getAliveHumans();
-    // console.log(`aliveHumans.length = ${aliveHumans.length}`);
-    const monsterMaxHealth = 80 * Math.pow(1.2, gameModelInstance.saveData.level);
+    const playerLights = getPlayerLights();
+    const monsterMaxHealth = (150 * gameModelInstance.saveData.level) - 50;
     const numMonsters = maxMonsters;
 
     if (monsterArray.length < numMonsters) {
@@ -214,14 +252,29 @@ export function updateMonsters(timeDiff : number) : void {
             createMonster(monsterMaxHealth);
         }
     }
+    if (monsterHealthBarArray.length < numMonsters) {
+        for (let i = 0; i < numMonsters - monsterHealthBarArray.length; i++) {
+            monsterHealthBarArray.push({x:0,y:0,percent:100});
+        }
+    }
 
     for (let i = 0; i < monsterArray.length; i++) {
         if (i >= numMonsters) {
             monsterArray[i].visible = false;
+            if (monsterHealthBarArray[i]) {
+                monsterHealthBarArray[i].percent = 100;
+            }
         } else {
             monsterArray[i].visible = true;
-            monsterArray[i].updateMonster(timeDiff, monsterMaxHealth, aliveHumans);
+            monsterArray[i].updateMonster(timeDiff, aliveHumans, monsterMaxHealth);
+            monsterArray[i].updateMonsterHealth(timeDiff, playerLights, monsterMaxHealth);
+            if (monsterHealthBarArray[i]) {
+                monsterHealthBarArray[i].percent = Math.round((monsterArray[i].health / monsterMaxHealth) * 100);
+                const globalPos = monsterArray[i].toGlobal({x:0,y:0});
+                monsterHealthBarArray[i].x = globalPos.x;
+                monsterHealthBarArray[i].y = globalPos.y;
+            }
         }
     }
-
+    updateMonsterHealthBars();
 }

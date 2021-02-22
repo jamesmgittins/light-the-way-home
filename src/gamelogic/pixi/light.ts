@@ -1,15 +1,16 @@
 import * as PIXI from 'pixi.js';
 import { maskContainer } from './containers';
 
-const textures : PIXI.Texture[] = [];
+let texture : PIXI.Texture;
 const lights : Light[] = [];
 const discardedLights : Light[] = [];
 
-function generateTexture(radius : number) : PIXI.Texture {
+export function generateLightTexture() : PIXI.Texture {
 
-    if (textures[radius])
-        return textures[radius];
+    if (texture)
+        return texture;
 
+    const radius = 100;
     const blast = document.createElement('canvas');
     blast.width = radius * 2;
     blast.height = radius * 2;
@@ -32,8 +33,9 @@ export class Light extends PIXI.Sprite {
     discarded = false;
 
     constructor(radius : number, brightness : number) {
-        super(generateTexture(radius));
+        super(generateLightTexture());
         this.radius = radius;
+        this.scale.set(radius / 100, radius / 100);
         this.brightness = brightness;
         this.wobble = Math.random() * 6;
     }
@@ -61,7 +63,8 @@ export function getLight(radius : number, brightness : number) : Light {
         const light = discardedLights.pop();
         light.discarded = false;
         light.visible = true;
-        light.texture = generateTexture(radius);
+        light.texture = generateLightTexture();
+        light.scale.set(radius / 100, radius / 100);
         light.radius = radius;
         light.brightness = brightness;
         light.anchor.set(0.5, 0.5);

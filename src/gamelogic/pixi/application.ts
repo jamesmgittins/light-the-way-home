@@ -1,6 +1,8 @@
 import * as PIXI from 'pixi.js';
-import { gameModel, GameModel, GameState, updateGameModel } from '../gamemodel';
-import { saveSaveGame } from '../saveloadfunctions';
+import { GameModel, GameState } from '../gamemodel';
+import { loadSaveGame, saveSaveGame } from '../saveloadfunctions';
+import { gameModel, updateGameModel } from '../stores';
+import { applyUpgrades } from '../upgrades';
 import { setupBuildings, updateBuildingLights } from './buildings';
 import { backgroundContainer, maskContainer, maskRenderTexture } from './containers';
 import { setupEyes, updateEyes } from './eyes';
@@ -9,6 +11,7 @@ import { KeysPressed } from './keyboard';
 import { updateLights } from './light';
 import { onWheel, canvasSize, gameFieldSize, centerGameContainer, scrollGameContainer, gameContainer } from './mapfunctions';
 import { setMonsterTextures, setupMonstersLevel, updateMonsters } from './monsters';
+import { getPlayerLights, updatePlayerLights } from './playerlights';
 
 /**
  * Reference to the GameModel.
@@ -34,8 +37,6 @@ window.onresize = function () {
 
 function renderMask() : void {
     maskContainer.visible = true;
-    // maskRenderTexture.width = gameFieldSize.x;
-    // maskRenderTexture.height = gameFieldSize.y;
     app.renderer.render(maskContainer, maskRenderTexture);
     maskContainer.visible = false;
 }
@@ -53,6 +54,7 @@ function update(timeDiff: number) {
         updateHumans(timeDiff);
         updateMonsters(timeDiff);
         updateLights(timeDiff);
+        updatePlayerLights(timeDiff);
 
         if (gameModelInstance.humansEaten + gameModelInstance.humansEscaped >= gameModelInstance.humansToSpawn) {
             endLevelTimer -= timeDiff;
@@ -68,6 +70,7 @@ function update(timeDiff: number) {
 export function setupLevel() : void {
     endLevelTimer = 2;
     gameModelInstance.setupLevel();
+    applyUpgrades();
     setupHumansLevel();
     setupMonstersLevel();
     setupBuildings();
@@ -86,6 +89,7 @@ export function startApplication(): void {
 
     app.loader
         .add('sprites/eyes.jpg')
+        .add('sprites/light.png')
         .add('sprites/building.png')
         .add('sprites/humans.json')
         .add('sprites/golem.json')
@@ -94,6 +98,9 @@ export function startApplication(): void {
             setHumanTextures();
             setMonsterTextures();
             setupEyes();
+
+            gameModelInstance.saveData = loadSaveGame();
+            updateGameModel();
 
             app.stage.addChild(gameContainer);
 

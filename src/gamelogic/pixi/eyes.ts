@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { gameModel, GameModel, GameState } from '../gamemodel';
+import { GameModel, GameState } from '../gamemodel';
+import { gameModel } from '../stores';
 import { unmaskedContainer } from "./containers";
 import { gameFieldSize } from './mapfunctions';
 
@@ -34,7 +35,7 @@ export function setupEyes() : void {
 
 export function updateEyes(timeDiff : number) : void {
 
-    if (gameModelInstance.state == GameState.playing) {
+    if (gameModelInstance.state == GameState.playing || gameModelInstance.state == GameState.endoflevel) {
         sprite.visible = false;
         return;
     }
