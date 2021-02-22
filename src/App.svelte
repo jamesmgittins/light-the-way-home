@@ -1,0 +1,78 @@
+<!-- 
+	App.svelte is the first svelte file the application loads.
+	svelte-spa-router handles navigation between different pages.
+	The pages are stored in src/routes as .svelte files.
+	They need to be added to the const routes in this file. Then they can be navigated to.
+-->
+
+<script lang="ts">
+	import Home from "./routes/Home.svelte";
+	import Notifications from './components/Notifications.svelte';
+	import { onMount } from "svelte";
+	import { startApplication } from "./gamelogic/pixi/application";
+	import { gameModel, GameState } from "./gamelogic/gamemodel";
+	import Playing from "./routes/Playing.svelte";
+	import LevelStats from "./components/LevelStats.svelte";
+	import Options from "./components/Options.svelte";
+
+	onMount(() => {
+		startApplication();
+	});
+
+	let componentToShow;
+	$: switch($gameModel.state) {
+		case GameState.startgame:
+			componentToShow = Home;
+			break;
+		case GameState.playing:
+			componentToShow = Playing;
+			break;
+		case GameState.endoflevel:
+			componentToShow = Home;
+			break;
+	}
+</script>
+
+<div class="grid">
+	<canvas id="game-canvas"></canvas>
+
+	<div class="item">
+		<svelte:component this={componentToShow}/>
+	</div>
+</div>
+
+{#if $gameModel.state == GameState.playing}
+	<LevelStats/>
+{/if}
+
+<Options/>
+
+<!-- Add the Notifications component so messages appear on every page -->
+<Notifications></Notifications>
+
+<!-- This is where CSS for the navigation menu can be defined -->
+<style>
+	div.grid {
+		display:flex;
+		flex-direction: column;
+		height:100%;
+		width:100%;
+	}
+	canvas {
+		image-rendering: -moz-crisp-edges;
+		image-rendering: -webkit-crisp-edges;
+		image-rendering: pixelated;
+		image-rendering: crisp-edges;
+		/* flex-grow: 1; */
+		flex-basis: auto;
+		height:60vh;
+		width: 100%;
+		background-color: #000;
+	}
+	div.item {
+		/* flex-grow: 1; */
+		flex-basis: auto;
+		width: 100%;
+		/* overflow: auto; */
+	}
+</style>
