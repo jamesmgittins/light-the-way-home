@@ -79,6 +79,7 @@ export let app: PIXI.Application;
 export function startApplication(): void {
     
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+    PIXI.utils.skipHello();
 
     const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
     app = new PIXI.Application({ view: canvas, resizeTo: canvas, antialias: false });
