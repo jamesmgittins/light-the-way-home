@@ -1,6 +1,6 @@
 <script lang="ts">
-import { gameModel } from "../gamelogic/stores";
-import { formatWhole } from "../gamelogic/utils";
+    import { gameModel } from "../gamelogic/stores";
+    import { formatWhole } from "../gamelogic/utils";
 </script>
 
 <div class="stats">

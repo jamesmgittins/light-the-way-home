@@ -1,8 +1,5 @@
 <script lang="ts">
     import { monsterHealthBars } from "../gamelogic/stores";
-
-
-    $monsterHealthBars
 </script>
 
 {#each $monsterHealthBars as bar}

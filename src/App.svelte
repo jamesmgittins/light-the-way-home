@@ -16,7 +16,7 @@
 	import Options from "./components/Options.svelte";
 	import EndLevel from "./routes/EndLevel.svelte";
 	import { gameModel } from "./gamelogic/stores";
-import MonsterHealthBars from "./components/MonsterHealthBars.svelte";
+	import MonsterHealthBars from "./components/MonsterHealthBars.svelte";
 
 	onMount(() => {
 		startApplication();
