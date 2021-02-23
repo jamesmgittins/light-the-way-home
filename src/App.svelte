@@ -77,6 +77,7 @@ import MonsterHealthBars from "./components/MonsterHealthBars.svelte";
 		flex-grow: 1;
 		flex-basis: auto;
 		background-color: #111;
+		overflow-x: auto;
 		width: 100%;
 		z-index: 20;
 		/* overflow: auto; */

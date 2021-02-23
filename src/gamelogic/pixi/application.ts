@@ -90,6 +90,8 @@ export function startApplication(): void {
     app.loader
         .add('sprites/eyes.jpg')
         .add('sprites/light.png')
+        .add('sprites/beam-light.png')
+        .add('sprites/beam.png')
         .add('sprites/building.png')
         .add('sprites/humans.json')
         .add('sprites/golem.json')

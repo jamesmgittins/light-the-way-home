@@ -18,7 +18,7 @@
     div {
         z-index: 10;
         position: absolute;
-        height:10px;
+        height:8px;
         width:40px;
         transform : translate(-50%, -40px);
         padding:1px;

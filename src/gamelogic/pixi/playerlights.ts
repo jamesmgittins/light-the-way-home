@@ -223,10 +223,10 @@ export function playerClick(x : number, y : number) : void {
             beamLight.scale.y = distanceBetweenPoints(beamLight.innerSprite.x, beamLight.innerSprite.y, beamLight.innerSprite2.x, beamLight.innerSprite2.y) / 32;
             beamLight.rotation = Math.atan2(beamLight.innerSprite2.y - beamLight.innerSprite.y, beamLight.innerSprite2.x - beamLight.innerSprite.x) + Math.PI / 2;
             beamLightIndex++;
-            beamLight.minX = Math.min(beamLight.innerLight.x, beamLight.innerLight2.x);
-            beamLight.minY = Math.min(beamLight.innerLight.y, beamLight.innerLight2.y);
-            beamLight.maxX = Math.max(beamLight.innerLight.x, beamLight.innerLight2.x);
-            beamLight.maxY = Math.max(beamLight.innerLight.y, beamLight.innerLight2.y);
+            beamLight.minX = Math.min(beamLight.innerLight.x, beamLight.innerLight2.x) - 20;
+            beamLight.minY = Math.min(beamLight.innerLight.y, beamLight.innerLight2.y) - 20;
+            beamLight.maxX = Math.max(beamLight.innerLight.x, beamLight.innerLight2.x) + 20;
+            beamLight.maxY = Math.max(beamLight.innerLight.y, beamLight.innerLight2.y) + 20;
             beamLight.vector = {
                 x: beamLight.innerSprite2.x - beamLight.innerSprite.x,
                 y: beamLight.innerSprite2.y - beamLight.innerSprite.y

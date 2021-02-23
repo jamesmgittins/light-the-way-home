@@ -29,7 +29,7 @@
 
 <div class="upgrades">
     <div on:click={e => selectLight(PlayerLightType.spotlight)} class="clickable" class:selected={$gameModel.playerLights.currentLight == PlayerLightType.spotlight}>
-        <strong>Spotlight</strong>
+        <strong>Lamp Post</strong>
         <div class="upgrades">
             <Upgrade upgradeId={1}/>
             <Upgrade upgradeId={2}/>
@@ -65,6 +65,8 @@
 <style>
     div.upgrades {
         text-align: center;
+        width:fit-content;
+        margin: auto;
         display: grid;
         grid-template-columns: fit-content(100px) fit-content(100px) fit-content(100px);
         justify-content: center;

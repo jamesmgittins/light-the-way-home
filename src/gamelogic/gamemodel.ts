@@ -46,7 +46,7 @@ export class GameModel {
     public humanValue = 1;
     public humanSpeed = 16;
     public humanLight = {
-        brightness : 0.5, radius : 32
+        brightness : 0.4, radius : 24
     };
 
     public setupLevel() : void {
