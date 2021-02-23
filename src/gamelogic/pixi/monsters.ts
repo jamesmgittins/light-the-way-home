@@ -244,7 +244,7 @@ export function setupMonstersLevel() : void {
 export function updateMonsters(timeDiff : number) : void {
     const aliveHumans = getAliveHumans();
     const playerLights = getPlayerLights();
-    const monsterMaxHealth = (150 * gameModelInstance.saveData.level) - 50;
+    const monsterMaxHealth = (150 * gameModelInstance.saveData.level) - 75;
     const numMonsters = maxMonsters;
 
     if (monsterArray.length < numMonsters) {
