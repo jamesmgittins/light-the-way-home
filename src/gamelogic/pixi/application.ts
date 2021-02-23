@@ -11,7 +11,7 @@ import { KeysPressed } from './keyboard';
 import { updateLights } from './light';
 import { onWheel, canvasSize, gameFieldSize, centerGameContainer, scrollGameContainer, gameContainer } from './mapfunctions';
 import { setMonsterTextures, setupMonstersLevel, updateMonsters } from './monsters';
-import { getPlayerLights, updatePlayerLights } from './playerlights';
+import { updatePlayerLights } from './playerlights';
 
 /**
  * Reference to the GameModel.
