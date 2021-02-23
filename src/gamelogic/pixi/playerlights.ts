@@ -180,9 +180,22 @@ export function updatePlayerLights(timeDiff : number) : void {
     for (let i = 0; i < spotLights.length; i++) {
         spotLights[i].update(timeDiff);
     }
+    if (spotLights.length > gameModelInstance.playerLights.spotlight.count) {
+        const light = spotLights.pop();
+        maskContainer.removeChild(light);
+        characterContainer.removeChild(light.innerSprite);
+    }
 
     if (beamLights.length < gameModelInstance.playerLights.beamlight.count) {
         beamLights.push(new BeamLight(PIXI.Texture.from('sprites/beam.png')));
+    }
+    if (beamLights.length > gameModelInstance.playerLights.beamlight.count) {
+        const light = beamLights.pop();
+        maskContainer.removeChild(light);
+        maskContainer.removeChild(light.innerLight);
+        maskContainer.removeChild(light.innerLight2);
+        characterContainer.removeChild(light.innerSprite);
+        characterContainer.removeChild(light.innerSprite2);
     }
     for (let i = 0; i < beamLights.length; i++) {
         beamLights[i].update(timeDiff);
@@ -191,6 +204,11 @@ export function updatePlayerLights(timeDiff : number) : void {
     if (orbLights.length < gameModelInstance.playerLights.orboflight.count) {
         orbLights.push(new OrbOfLight(generateLightTexture()));
     }
+    if (orbLights.length > gameModelInstance.playerLights.orboflight.count) {
+        const light = orbLights.pop();
+        maskContainer.removeChild(light);
+        characterContainer.removeChild(light.innerSprite);
+    }
     for (let i = 0; i < orbLights.length; i++) {
         orbLights[i].update(timeDiff);
     }
@@ -198,6 +216,9 @@ export function updatePlayerLights(timeDiff : number) : void {
 
 
 export function playerClick(x : number, y : number) : void {
+    if (y < gameFieldSize.y * 0.1 || y > gameFieldSize.y * 0.9)
+        return;
+
     if (gameModelInstance.playerLights.currentLight == PlayerLightType.spotlight && spotLights.length > 0) {
         const spotLight = spotLights[spotLightIndex];
         spotLight.position.set(x, y);
@@ -247,6 +268,11 @@ export function playerClick(x : number, y : number) : void {
 
 export function playerMouseMove(x : number, y : number) : void {
     if (spotLightCursor) spotLightCursor.visible = false;
+    if (beamLightCursor) beamLightCursor.visible = false;
+
+    if (y < gameFieldSize.y * 0.1 || y > gameFieldSize.y * 0.9)
+        return;
+
     if (gameModelInstance.playerLights.currentLight == PlayerLightType.spotlight && spotLights.length > 0) {
         if (!spotLightCursor) {
             spotLightCursor = new PIXI.Sprite(PIXI.Texture.from('sprites/light.png'));
@@ -256,7 +282,7 @@ export function playerMouseMove(x : number, y : number) : void {
         spotLightCursor.visible = true;
         spotLightCursor.position.set(x,y);
     }
-    if (beamLightCursor) beamLightCursor.visible = false;
+    
     if (gameModelInstance.playerLights.currentLight == PlayerLightType.beamlight && beamLights.length > 0) {
         if (!beamLightCursor) {
             beamLightCursor = new PIXI.Sprite(PIXI.Texture.from('sprites/beam-light.png'));

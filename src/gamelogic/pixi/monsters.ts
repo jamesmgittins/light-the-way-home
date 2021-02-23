@@ -116,6 +116,10 @@ export class Monster extends Character {
                 this.holdingTarget = true;
                 this.escapeVector = getRandomPosition();
             }
+            if (this.health < maxHealth * 0.5 && distanceBetweenPoints(this.x, this.y, this.escapeVector.x, this.escapeVector.y) < 20) {
+                this.health = maxHealth;
+                this.position.copyFrom(getRandomPosition());
+            }
         }
     }
 
@@ -216,7 +220,7 @@ export class Monster extends Character {
 
 function getRandomPosition() : {x:number, y:number} {
     return {
-        x : gameFieldSize.x * 0.3 + Math.random() * gameFieldSize.x * 0.4,
+        x : gameFieldSize.x * 0.1 + Math.random() * gameFieldSize.x * 0.8,
         y : Math.random() > 0.5 ? 0 : gameFieldSize.y
     }
 }
