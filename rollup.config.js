@@ -58,7 +58,7 @@ export default {
 		resolve({
 			preferBuiltins:false,
 			browser: true,
-			dedupe: ['svelte']
+			dedupe: ['svelte','pixi.js']
 		}),
 		commonjs(),
 		typescript({

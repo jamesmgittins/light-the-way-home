@@ -151,7 +151,7 @@ export class Monster extends Character {
 
         let vector : {x:number, y:number};
 
-        if (this.holdingTarget || this.health < maxHealth / 2) {
+        if (!this.target || this.holdingTarget || this.health < maxHealth / 2) {
             if (!this.escapeVector) this.escapeVector = getRandomPosition();
             vector = normalizeVector(this.escapeVector.x - this.x, this.escapeVector.y - this.y);
         } else {
